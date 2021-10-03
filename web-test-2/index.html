@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+    <h1>智慧植生牆</h1>
+    <head>
+        <meta charset="utf-8">
+        <title>植生牆</title>
+        <link href="style2.css" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300&display=swap" rel="stylesheet">
+        <script src="https://cdn.staticfile.org/jquery/1.10.2/jquery.min.js"></script> <!--連到jquery-->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js"></script>  <!--連到jquery-->
+    </head>
+    
+    <body>       
+        <div style="text-align:center;" id="Pageswitching">
+            <span><input type="button"  value="       首頁       "  class="home"      id="home"      onclick="gohomepage()"></span>
+            <span><input type="button"  value="     控制系統     "  class="control"   id="control"   onclick="gocontrolpage()"></span>
+            <span><input type="button"  value="   即時數據監測   "  class="nowdata"   id="nowdata"   onclick="gonowdatapage()"></span>
+            <span><input type="button"  value="     歷史數據     "  class="histdata"  id="histdata"  onclick="gohistdatapage()"></span>
+        </div>
+
+        <div id=homepage>
+            <div class=plantwall><img src="plant wall.jpg" alt="plant wall image" width="100%"></div>               
+            <header></header>            
+        </div>
+
+        <div id=controlpage>
+            <h2>控制系統</h2>
+            
+            <p style="color:rgb(72, 1, 105) ; font-size:25px; font-weight:bolder;">選擇模式</p>
+            <select id="SelectTheMode" name="SelectTheMode" style="font-size:18px;">
+                <option value="1">自動控制</option>
+                <option value="2">網頁手動</option>
+                <option value="3">現場手動</option>
+                <option value="4">定時開關</option>
+            </select>
+            <p style="color:rgb(72, 1, 105) ; font-size:25px; font-weight:bolder;">抽水馬達開關</p>
+            <select id="MotorOnOff" name="MotorOnOff" style="font-size:18px;">
+                <option value=" " id="motorop1">抽水馬達開關</option>
+                <option value="1" id="motorop2">開啟</option>
+                <option value="0" id="motorop3">關閉</option>
+                <option value="2" id="motorop3">每4小時啟動</option>
+                <option value="3" id="motorop3">每2小時啟動</option>
+            </select>
+            <p style="color:rgb(72, 1, 105) ; font-size:25px; font-weight:bolder;">照明燈開關</p>
+            <select id="LightOnOff" name="LightOnOff" style="font-size:18px;">
+                <option value=" " id="lightop1">照明燈開關</option>
+                <option value="1" id="lightop1">開啟</option>
+                <option value="0" id="lightop1">關閉</option>
+                <option value="2" id="lightop1">turn on for 2hr/4hr</option>
+                <option value="3" id="lightop1">turn on for 1min/5min</option>
+            </select>
+            <p><button onclick="update()" class="update" id="update">UPDATE</button></p>
+
+        </div>
+
+        <div id=histdatapage>
+            <h2>歷史數據</h2>           
+            <p>空氣濕度</p>
+            <iframe width="450" height="260" style="border: 3px solid #0c4105;" src="https://thingspeak.com/channels/1395814/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>                  
+            <p>溫度</p>
+            <iframe width="450" height="260" style="border: 3px solid #0c4105;" src="https://thingspeak.com/channels/1395814/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>         
+            <p>水箱水位</p>
+            <iframe width="450" height="260" style="border: 3px solid #0c4105;" src="https://thingspeak.com/channels/1395814/charts/3?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>     
+            <p>土壤濕度</p>
+            <iframe width="450" height="260" style="border: 3px solid #0c4105;" src="https://thingspeak.com/channels/1395814/charts/4?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&type=line&update=15"></iframe>
+        </div>
+        
+        <div id=nowdatapage>
+            <h2>即時數據監測</h2>            
+            <p><input type="button"  value="數據更新"  class="getdata" id="getdata"></p>
+            <div id="waterlevel"></div>               
+            <div id="moisturehumidity"></div>
+                                                                                   
+            <script>
+                $(function(){               
+                    // get the latest data (field1 to field5) from ThinkSpeak
+                    $("#getdata").click(function(){                           
+                        document.getElementById("aa").innerHTML = "";  //清空畫面文字
+                        $.getJSON("https://api.thingspeak.com/channels/1395814/feeds/last.json?key=0QPY4GY9VZSSRCF0", function(data) {
+                            $("#aa").append( "<p>時間 : " + data.created_at + "</p>");
+                            $("#aa").append( "<p>資料標籤 : " + data.entry_id + "</p>");
+                            $("#aa").append( "<p>空氣濕度 : " + data.field1 + "</p>");
+                            $("#aa").append( "<p>溫度 : " + data.field2 + "</p>");
+                            $("#aa").append( "<p>水箱水位 : " + data.field3 + "</p>");
+                            $("#aa").append( "<p>亮度 : " + data.field4 + "</p>");
+                            $("#aa").append( "<p>土壤濕度 : " + data.field5 + "</p>");
+                        });
+                    });
+                });
+
+            </script>
+            <div id=aa></div>
+        </div>
+
+        <script>
+            document.getElementById("controlpage").style.display="none"; //隱藏div
+            document.getElementById("nowdatapage").style.display="none";
+            document.getElementById("histdatapage").style.display="none";
+
+            function update(){
+                $.post("https://api.thingspeak.com/update.json",{
+                api_key: "UQRL180GJ67UB0U0",
+                field1: $('#SelectTheMode').val(),
+                field2: $('#MotorOnOff').val(),
+                field3: $('#LightOnOff').val()
+                });
+                
+                alert('update sucessful!');
+                $("#update").attr("disabled",true);
+                setTimeout(function(){
+                    $("#update").removeAttr("disabled");
+                },15000); //15秒內不能點擊
+
+
+            }
+
+            function gohomepage(){
+                document.getElementById("homepage").style.display=""; //顯現div
+                document.getElementById("controlpage").style.display="none"; //隱藏div
+                document.getElementById("nowdatapage").style.display="none";
+                document.getElementById("histdatapage").style.display="none";
+            }
+
+            function gocontrolpage(){
+                document.getElementById("controlpage").style.display="";
+                document.getElementById("homepage").style.display="none";
+                document.getElementById("nowdatapage").style.display="none";
+                document.getElementById("histdatapage").style.display="none";
+            }
+
+            function gonowdatapage(){
+                document.getElementById("nowdatapage").style.display="";
+                document.getElementById("homepage").style.display="none";
+                document.getElementById("histdatapage").style.display="none";
+                document.getElementById("controlpage").style.display="none";
+            }
+
+            function gohistdatapage(){
+                document.getElementById("histdatapage").style.display="";
+                document.getElementById("homepage").style.display="none";
+                document.getElementById("nowdatapage").style.display="none";
+                document.getElementById("controlpage").style.display="none";
+            }
+        </script>
+    </body>
+</html>
