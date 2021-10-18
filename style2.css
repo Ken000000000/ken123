@@ -47,6 +47,7 @@ p{
   width:500px;
   background-color: rgba(255, 255, 255, 0.438);
   margin: 0 auto;
+  text-align: center;/*文字水平對齊置中*/
 }
 #bb{
   width:260px;
